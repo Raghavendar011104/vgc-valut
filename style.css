@@ -1,0 +1,125 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap');
+
+:root {
+    --bg-dark: #0b131a;
+    --bg-card: #15202b;
+    --text-main: #f8f9fa;
+    --text-sub: #94a3b8;
+    --accent: #38bdf8;
+    --sidebar-width: 260px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Outfit', sans-serif; user-select: none; }
+body { background-color: var(--bg-dark); color: var(--text-main); }
+
+/* --- RESPONSIVE LAYOUT --- */
+.main-wrapper {
+    transition: margin-left 0.3s ease;
+    width: 100%;
+}
+.content-section {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Header */
+.app-header {
+    display: flex; align-items: center; padding: 15px 20px; 
+    background: var(--bg-dark); border-bottom: 1px solid #1e293b; 
+    position: sticky; top: 0; z-index: 90;
+}
+.header-title { font-size: 20px; font-weight: 800; color: #ffcc00; letter-spacing: 1px; margin-left: 15px; }
+#menu-btn { background: none; border: none; color: #ffcc00; font-size: 24px; cursor: pointer; display: block; }
+
+/* Sidebar/Menu */
+.side-menu {
+    position: fixed; top: 0; left: -100%; width: var(--sidebar-width); height: 100vh;
+    background-color: var(--bg-dark); border-right: 1px solid #1e293b;
+    transition: left 0.3s ease-in-out; z-index: 1000; box-shadow: 2px 0 15px rgba(0,0,0,0.8);
+    overflow-y: auto;
+}
+.side-menu.open { left: 0; }
+.sidebar-header { padding: 20px; font-size: 22px; font-weight: 800; color: #ffcc00; border-bottom: 1px solid #1e293b; }
+
+.menu-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); z-index: 999; backdrop-filter: blur(2px); }
+.menu-overlay.active { display: block; }
+
+.menu-list { list-style: none; padding: 0; margin: 0; }
+.menu-item { padding: 16px 20px; display: flex; align-items: center; gap: 12px; font-size: 15px; font-weight: 600; cursor: pointer; color: var(--text-sub); border-bottom: 1px solid rgba(255,255,255,0.02); transition: 0.2s; }
+.menu-item:hover { background-color: var(--bg-card); color: var(--text-main); }
+.menu-item.active { background-color: rgba(56, 189, 248, 0.1); color: var(--accent); border-left: 4px solid var(--accent); }
+
+/* --- DESKTOP SPECIFIC RULES --- */
+@media (min-width: 768px) {
+    .side-menu { left: 0; box-shadow: none; } /* Pin to left */
+    #menu-btn { display: none; } /* Hide hamburger */
+    .menu-overlay { display: none !important; } /* Disable overlay */
+    .main-wrapper { margin-left: var(--sidebar-width); width: calc(100% - var(--sidebar-width)); }
+    .header-title { margin-left: 0; }
+}
+
+/* Common UI Elements */
+.control-panel { background: var(--bg-card); padding: 15px; border-radius: 8px; border: 1px solid #334155; margin-bottom: 20px; display: flex; flex-direction: column; gap: 15px; }
+.action-bar { margin-top: 20px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+.styled-select, .styled-input, .styled-textarea {
+    width: 100%; padding: 10px 15px; border-radius: 6px; 
+    background: #0f172a; border: 1px solid #334155; color: white; 
+    outline: none; font-size: 14px; font-family: inherit;
+}
+.styled-input:focus, .styled-textarea:focus { border-color: var(--accent); }
+.autocomplete-dropdown { display: none; position: absolute; top: 100%; left: 0; width: 100%; background: #0f172a; border: 1px solid #334155; border-radius: 0 0 8px 8px; max-height: 250px; overflow-y: auto; z-index: 60; box-shadow: 0 10px 25px rgba(0,0,0,0.8); }
+
+.coach-toggle { color: #4ade80; font-size: 13px; font-weight: bold; margin-left: auto; display: flex; align-items: center; gap: 5px; cursor: pointer; }
+
+/* Buttons */
+.btn-action { background: #334155; color: white; border: none; padding: 10px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+.btn-action:hover { filter: brightness(1.2); }
+.btn-add { background: #4CAF50; }
+.btn-danger { background: #ef4444; }
+
+/* Team Grid */
+.team-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; }
+.team-slot { background: var(--bg-card); border: 1px dashed #334155; border-radius: 8px; height: 100px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; position: relative; transition: 0.2s; }
+.team-slot:hover { border-color: var(--text-sub); }
+.team-slot.filled { border: 1px solid #ffcc00; background: rgba(255, 204, 0, 0.05); }
+.team-slot img { width: 55px; height: 55px; image-rendering: pixelated; }
+.remove-x { position: absolute; top: -8px; right: -8px; background: #ef4444; color: white; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; cursor: pointer; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
+
+/* Pokedex Grid */
+.search-bar-container { position: sticky; top: 60px; z-index: 50; background: var(--bg-dark); padding-bottom: 15px; margin-bottom: 15px; border-bottom: 1px solid #1e293b; }
+@media (min-width: 768px) { .search-bar-container { top: 65px; } }
+.dex-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
+.dex-card { border-radius: 12px; padding: 15px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.4); display: flex; flex-direction: column; align-items: center; cursor: pointer; border: 2px solid transparent; transition: transform 0.2s; }
+.dex-card:hover { transform: translateY(-3px); }
+.dex-sprite { width: 75px; height: 75px; image-rendering: pixelated; margin-bottom: 8px; filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.5)); }
+.dex-name { font-weight: 800; font-size: 14px; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); }
+.dex-types { font-size: 11px; font-weight: 600; opacity: 0.9; margin-top: 4px; }
+
+/* Modals */
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 19, 26, 0.85); z-index: 999; display: flex; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px); }
+.modal-content { background: var(--bg-card); border: 1px solid #334155; border-radius: 12px; padding: 24px; width: 100%; max-width: 420px; max-height: 85vh; overflow-y: auto; text-align: center; box-shadow: 0 15px 40px rgba(0,0,0,0.8); }
+.stat-row { display: flex; justify-content: space-between; font-size: 13px; margin: 6px 0; border-bottom: 1px dashed #334155; padding-bottom: 4px; }
+
+/* Simulator / Matrix */
+.sim-grid { display: flex; gap: 8px; justify-content: flex-start; flex-wrap: wrap; }
+.sim-slot { width: 65px; height: 65px; background: #0f172a; border-radius: 8px; border: 1px solid #334155; display: flex; align-items: center; justify-content: center; }
+.sim-slot img { width: 55px; image-rendering: pixelated; }
+.matrix-table { width: 100%; border-collapse: collapse; text-align: center; font-size: 11px; background: #0f172a; color: white; border-radius: 8px; overflow: hidden; }
+.matrix-table th, .matrix-table td { border: 1px solid #1e293b; padding: 6px; }
+.matrix-sprite { width: 35px; image-rendering: pixelated; }
+
+/* Analysis Details */
+details { background: #0f172a; border-radius: 8px; margin-bottom: 8px; border: 1px solid #334155; overflow: hidden; }
+summary { padding: 12px 15px; cursor: pointer; font-size: 13px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.02); }
+.summary-content { padding: 15px; border-top: 1px solid #1e293b; }
+.summary-row { display: flex; align-items: center; margin-bottom: 8px; background: rgba(0,0,0,0.3); border-radius: 6px; padding: 6px; }
+.type-label { font-size: 11px; font-weight: bold; color: #fff; padding: 3px 6px; border-radius: 4px; text-shadow: 1px 1px 1px #000; text-align: center; display: inline-block; min-width: 60px; }
+.summary-sprites img { width: 35px; height: 35px; image-rendering: pixelated; margin-left: 8px; }
+
+/* Speed Tiers */
+.speed-tier-row { display: flex; align-items: center; background: #0f172a; padding: 10px; margin-bottom: 8px; border-radius: 8px; border: 1px solid #334155; }
+.speed-tier-value { font-family: monospace; font-size: 18px; font-weight: bold; color: #ffcc00; width: 45px; text-align: right; margin-right: 15px; }
+.speed-tier-sprite { width: 45px; image-rendering: pixelated; margin-right: 12px; }
+.speed-tier-name { font-size: 14px; font-weight: 600; }

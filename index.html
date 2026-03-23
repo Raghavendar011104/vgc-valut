@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>VGC Vault</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="side-menu" class="side-menu">
+        <div class="sidebar-header">🥷 Vault Menu</div>
+        <ul class="menu-list">
+            <li class="menu-item active" onclick="switchView('view-teams', this); toggleMenuMobile();">🛡️ Team Builder</li>
+            <li class="menu-item" onclick="switchView('view-pokedex', this); toggleMenuMobile();">📖 My Pokédex</li>
+            <li class="menu-item" onclick="switchView('view-sim', this); toggleMenuMobile();">⚔️ Simulator</li>
+            <li class="menu-item" onclick="switchView('view-lab', this); toggleMenuMobile();">🔬 Analytics Lab</li>
+            <hr style="border-color: #334155; margin: 10px 0;">
+            <li class="menu-item">⚙️ Settings</li>
+        </ul>
+    </div>
+    <div id="menu-overlay" class="menu-overlay" onclick="toggleMenuMobile()"></div>
+
+    <div class="main-wrapper">
+        
+        <header class="app-header">
+            <button id="menu-btn" onclick="toggleMenuMobile()">☰</button>
+            <span class="header-title">VGC Vault</span>
+        </header>
+
+        <main id="view-teams" class="content-section" style="display: block;">
+            <div class="control-panel">
+                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                    <select id="team-selector" onchange="loadSelectedTeam()" class="styled-select" style="flex-grow: 1;">
+                        <option value="default">Team 1 (Active)</option>
+                    </select>
+                    <button class="btn-action btn-add" onclick="createNewTeam()">+ New</button>
+                    <button class="btn-action" style="background: #eab308; color: #000; font-weight: bold;" onclick="openProTeamGallery('builder')">🏆 Browse Pro Teams</button>
+                </div>
+            </div>
+            <div id="team-container" class="team-grid"></div>
+            
+            <div class="action-bar">
+                <button class="btn-action" onclick="document.getElementById('import-modal').style.display='flex'">📥 Import</button>
+                <button class="btn-action" onclick="exportTeam()">📤 Export</button>
+                <button class="btn-action btn-danger" onclick="currentTeam=[]; saveTeam(); renderAllUI();">🗑️ Clear</button>
+                <label class="coach-toggle">
+                    <input type="checkbox" id="coach-toggle" checked onchange="toggleBeginnerMode()"> 🎓 Coach Mode
+                </label>
+            </div>
+            
+            <div style="margin-top: 15px; position: relative;">
+                <input type="text" id="quick-add-input" placeholder="🔍 Quick Add Pokémon..." onkeyup="handleQuickAddSearch()" class="styled-input">
+                <div id="quick-add-results" class="autocomplete-dropdown"></div>
+            </div>
+
+            <div id="type-summary-container" style="margin-top: 20px;"></div>
+            <div id="archetype-summary" style="margin-top: 20px; background: var(--bg-card); padding: 15px; border-radius: 8px;"></div>
+        </main>
+
+        <main id="view-pokedex" class="content-section" style="display: none;">
+            <div class="search-bar-container">
+                <input type="text" id="dex-search" placeholder="🔍 Search Pokémon..." onkeyup="filterPokedex()" class="styled-input">
+                <label style="color: #38bdf8; font-size: 13px; font-weight: bold; margin-top: 12px; display: inline-flex; align-items: center; gap: 6px; cursor: pointer;">
+                    <input type="checkbox" id="mega-toggle" onchange="renderPokedex()"> 🧬 Show Mega Evolutions
+                </label>
+            </div>
+            <div id="pokedex-grid" class="dex-grid"></div>
+        </main>
+
+        <main id="view-sim" class="content-section" style="display: none;">
+            <h3 style="color: #ffcc00; margin-bottom: 15px;">Simulate Matchup</h3>
+            
+            <p style="font-size: 12px; color: var(--text-sub);">Your Active Team (Pick 4):</p>
+            <div id="sim-your-team" class="sim-grid"></div>
+            
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 20px; margin-bottom: 5px;">
+                <p style="font-size: 12px; color: var(--text-sub); margin: 0;">Opponent Paste:</p>
+                <button class="btn-action" style="background: #eab308; color: #000; padding: 4px 10px; font-size: 11px; font-weight: bold;" onclick="openProTeamGallery('sim')">🏆 Browse Pro Teams</button>
+            </div>            
+            
+            <textarea id="sim-opp-paste" rows="4" class="styled-textarea" placeholder="Paste Showdown text here or use the quick load dropdown above..."></textarea>
+            <button class="btn-action btn-add" style="margin-top: 10px; width: 100%;" onclick="loadSimOpponent()">Load Opponent</button>
+            
+            <div id="sim-opp-team" class="sim-grid" style="margin-top: 15px;"></div>
+            
+            <div style="display: flex; gap: 10px; margin-top: 15px;">
+                <button class="btn-action" style="background: #9c27b0; flex: 1;" onclick="generate1v1LeadMatrix()">1v1 Matrix</button>
+                <button class="btn-action" style="background: #2196F3; flex: 1;" onclick="generate2v2LeadMatrix()">2v2 Matrix</button>
+            </div>
+            <div id="sim-analysis-results" style="margin-top: 20px;"></div>
+            <div id="sim-matrix-results" style="margin-top: 20px;"></div>
+        </main>        
+
+        <main id="view-lab" class="content-section" style="display: none;">
+            <h3 style="color: #ffcc00; margin-bottom: 15px;">Speed Tiers & Control</h3>
+            <div class="control-panel" style="flex-direction: row;">
+                <label style="font-size: 12px; color: white;"><input type="checkbox" id="speed-tailwind" onchange="renderSpeedTiers()"> Tailwind</label>
+                <label style="font-size: 12px; color: white;"><input type="checkbox" id="speed-trickroom" onchange="renderSpeedTiers()"> Trick Room</label>
+                <label style="font-size: 12px; color: white;"><input type="checkbox" id="speed-drop" onchange="renderSpeedTiers()"> -1 Speed Drop</label>
+            </div>
+            <div id="speed-tier-container"></div>
+        </main>
+    </div>
+
+    <div id="data-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content" id="modal-info"></div>
+    </div>
+    
+    <div id="edit-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content" id="edit-modal-info"></div>
+    </div>
+    
+    <div id="import-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <h2 style="color: #ffcc00;">Import Team</h2>
+            <textarea id="import-text" rows="8" class="styled-textarea" style="margin-top: 10px;"></textarea>
+            <button class="btn-action btn-add" style="margin-top: 15px; width: 100%;" onclick="processImport()">Import Team</button>
+            <button class="btn-action btn-danger" style="margin-top: 10px; width: 100%;" onclick="document.getElementById('import-modal').style.display='none'">Cancel</button>
+        </div>
+    </div>
+    
+    <div id="pro-gallery-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content" style="max-width: 500px;">
+            <h2 style="color: #ffcc00; margin-bottom: 15px;">🏆 Pro Team Gallery</h2>
+            <div id="pro-gallery-grid" style="display: flex; flex-direction: column; gap: 10px; max-height: 60vh; overflow-y: auto; padding-right: 5px;">
+            </div>
+            <button class="btn-action btn-danger" style="margin-top: 15px; width: 100%;" onclick="document.getElementById('pro-gallery-modal').style.display='none'">Close</button>
+        </div>
+    </div>
+
+    <script>var exports = window.exports = {};</script>
+    <script src="data/pokedex.js"></script>
+    <script src="data/abilities.js"></script>
+    <script src="data/moves.js"></script>
+    <script src="data/learnsets.js"></script>
+    <script src="data/items.js"></script>
+    
+    <script src="data.js"></script>
+    <script src="new_features.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
